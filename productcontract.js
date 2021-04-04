@@ -52,7 +52,7 @@ class Productcontract extends Contract {
 
     async unknownTransaction(ctx){
         //GRADED FUNCTION
-        throw new Error()
+        throw new Error('Function name missing');
     }
 
 
@@ -87,9 +87,9 @@ class Productcontract extends Contract {
         let precordKey = ProductRecord.makeKey([productId,name]);
         //TASK-1: Use a method from productRecord to read a record by key
         // get product record by calling the method of ProductList class
-        let precord = await ctx.productList.getPRecord(precordKey)
+        let precord = await ctx.productList.getPRecord(precordKey);
 
-        return JSON.stringify(precord)
+        return JSON.stringify(precord);
     }
 
 
@@ -104,11 +104,11 @@ class Productcontract extends Contract {
         //GRADED FUNCTION
         let precordKey = ProductRecord.makeKey([productId,name]);
         //TASK-3: Use a method from productList to read a record by key
-        let precord = ctx.productList.getPRecord(precordKey);
+        let precord = await ctx.productList.getPRecord(precordKey);
         //Use set_quantity from ProductRecord to update the quantity field
         //Use updatePRecord from productList to update the record on the ledger
-        precord.setQuantity(quantity)
-        await ctx.ProductList.updatePRecord(precord);
+        precord.setQuantity(quantity);
+        await ctx.productList.updatePRecord(precord);
 
         return precord.toBuffer();
     }
