@@ -122,44 +122,43 @@ class Productcontract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String} queryString the query string to be evaluated
     */    
-   async queryWithQueryString(ctx, queryString) {
+    async queryWithQueryString(ctx, queryString) {
 
-    console.log("query String");
-    console.log(JSON.stringify(queryString));
+        console.log("query String");
+        console.log(JSON.stringify(queryString));
 
-    let resultsIterator = await ctx.stub.getQueryResult(queryString);
+        let resultsIterator = await ctx.stub.getQueryResult(queryString);
 
-    let allResults = [];
+        let allResults = [];
 
-    while (true) {
-        let res = await resultsIterator.next();
+        while (true) {
+            let res = await resultsIterator.next();
 
-        if (res.value && res.value.value.toString()) {
-            let jsonRes = {};
+            if (res.value && res.value.value.toString()) {
+                let jsonRes = {};
 
-            console.log(res.value.value.toString('utf8'));
+                console.log(res.value.value.toString('utf8'));
 
-            jsonRes.Key = res.value.key;
+                jsonRes.Key = res.value.key;
 
-            try {
-                jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
-            } catch (err) {
-                console.log(err);
-                jsonRes.Record = res.value.value.toString('utf8');
+                try {
+                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                } catch (err) {
+                    console.log(err);
+                    jsonRes.Record = res.value.value.toString('utf8');
+                }
+
+                allResults.push(jsonRes);
             }
-
-            allResults.push(jsonRes);
-        }
-        if (res.done) {
-            console.log('end of data');
-            await resultsIterator.close();
-            console.info(allResults);
-            console.log(JSON.stringify(allResults));
-            return JSON.stringify(allResults);
+            if (res.done) {
+                console.log('end of data');
+                await resultsIterator.close();
+                console.info(allResults);
+                console.log(JSON.stringify(allResults));
+                return JSON.stringify(allResults);
+            }
         }
     }
-
-}
 
     /**
      * Query by Product Type
@@ -167,15 +166,20 @@ class Productcontract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String} product type to be queried
     */
-   async queryByProductType(ctx, productType ) {
+    async queryByProductType(ctx, productType ) {
         //  GRADED FUNCTION
         //   TASK-4 Complete teh queryString JSON Object to query using the ProductType Index  defined .(META-INF folder)
         //   Construct the JSON Couch DB selectir queryString that uses ProductType Index
         //   Pass the query string built to queryWithueryString
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.productType = productType;
+        queryString.use_index = ['productTypeIndexDoc', 'ProductTypeIndex'];
 
-    return queryResults;
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
 
-}
+        return queryResults;
+    }   
 
     /**
      * Query by Mfg_date
@@ -183,15 +187,19 @@ class Productcontract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String} mfg_date to queried
     */
-   async queryByMfgdate(ctx, mfg_date) {
+    async queryByMfgdate(ctx, mfg_date) {
          //   GRADED FUNCTION
          //   TASK-5: Write new index for MfgDate and write a CouchDB selector query that uses it to query by MfgDate
          //    Construct the JSON DB selector that uses MfgDateIndex
          //    Pass the query string built to the queryWithQueryString()
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.mfg_date = mfg_date;
+        queryString.use_index = ['MfgDateIndexDoc','MfgDateIndex'];
 
-    return queryResults;
-
-}
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+    }
 
     /**
      * Query by Product_Type Dual Query
@@ -199,15 +207,24 @@ class Productcontract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String} productType productType to queried
     */
-   async queryByProduct_Type_Dual(ctx, productType1, productType2) {
+    async queryByProduct_Type_Dual(ctx, productType1, productType2) {
         //  GRADED FUCNTION
         //  TASK-6: Write a CouchDB selector query that queries using two product types
         //  and uses the index created for prodcutType
         //  Construct the JSON couch DB selector that uses two product types
-        //  Pass the query string to queryWithQueryString
-    return queryResults;
+        //  Pass the query string to queryWithQueryString\
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.$or = [
+                            {"productType": productType1},
+                            {"productType": productType2}
+                        ];
+        queryString.use_index = ['productTypeIndexDoc','ProductTypeIndex'];
 
-}
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+    
+        return queryResults;
+    }
 
 }
 
