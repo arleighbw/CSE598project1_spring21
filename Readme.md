@@ -149,6 +149,24 @@ edit core.yaml at `FABRIC_CFG_PATH` ..`./fabric-sample/config/core.yaml`
 stateDatabase: CouchDb
 ```
 ___
+# Project Structure
+```
+Fabric-samples
++---p1
+|   +---ledger-api
+|   +---META-INF\statedb\couchdb\indexes
+|   |   |   MfgDataIndex.json
+|   |   |   ProductTypeIndex.json
+|   |   index.js
+|   |   package.json
+|   |   productcontract.js
+|   |   productlist.js
+|   |   productrecord.js
++---test-network
+|   |   p1.tar.gz //will be created when installing js to chaincode
+|   |   network.sh
+```
+___
 ### TESTING your smart contracts on fabric network
 ```
 # Install hyperledge and fabric-samples
